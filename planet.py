@@ -147,7 +147,7 @@ class Planet():
     def set_visiability(self, visiability=False, player=0):
         self.plaers_visiability[player] = visiability
 
-    def set_owner(self,player=0):
+    def set_owner(self,player=0):   
         if player != 0:
             self.plaers_visiability[player] = True
             self.plaers_fullvisibal[player] = True
@@ -173,10 +173,11 @@ class Planet():
         mineralscheck = [False,False,False]
         for i in range(len(self.minerals_on_surfice)):
             self.minerals_on_surfice[i] += mine_one_round[i]
+            self.current_minerals_reserve[i] -= mine_one_round[i]
             if self.minerals_on_surfice[i] < 0:
+                self.current_minerals_reserve[i] += mine_one_round[i]
                 self.minerals_on_surfice[i] -= mine_one_round[i]
             else:
-                self.current_minerals_reserve[i] -= mine_one_round[0] 
                 mineralscheck[i] = True          
         return mineralscheck
 

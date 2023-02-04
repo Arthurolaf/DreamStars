@@ -35,6 +35,7 @@ def test():
     print_planet_info(planet)
     planet.set_mine_minerals([0,-40,1])
     print_planet_info(planet)
-
-test()
+    print(planet.id)
+    print(planet.id)
+#test()
 
