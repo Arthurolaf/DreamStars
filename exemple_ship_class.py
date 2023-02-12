@@ -1,4 +1,3 @@
-import abc
 class Blueprint:
     def __init__(self, ship_type, hp, attack, defense, shield):
         self.ship_type = ship_type

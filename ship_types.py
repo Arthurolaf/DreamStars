@@ -1,4 +1,5 @@
 from ships_blueprint import Blueprint
+from ship_modules import Base_of_module
 
 class Cruiser(Blueprint):
     def __init__(self):
