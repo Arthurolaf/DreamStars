@@ -10,19 +10,7 @@ class Fleet:
     def __init__(self, ships):
         self.ships = ships
 
-    # need to rebuild def for all available attributes
-    # def sum_ships_of_same_type(self):
-    #     ships_by_type = {}
-    #     for ship in self.ships:
-    #         if ship.ship_type in ships_by_type:
-    #             ships_by_type[ship.ship_type].hp += ship.hp
-    #             ships_by_type[ship.ship_type].attack += ship.attack
-    #             ships_by_type[ship.ship_type].defense += ship.defense
-    #             ships_by_type[ship.ship_type].shield += ship.shield
-    #         else:
-    #             ships_by_type[ship.ship_type] = ship
-    #     return ships_by_type
-
+    
     def group_ships_by_type(self):
         ships_by_type = {}
         for ship in self.ships:
