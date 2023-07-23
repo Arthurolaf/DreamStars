@@ -36,7 +36,7 @@ class Example(QWidget):
         def populate():
             # Функция наплевала объектво размного размера на подобии звезд, возвращает как сцену
             scene = QGraphicsScene()
-
+            print("test3")
             for i in range(90):
                 x = random.randint(40, 940)
                 y = random.randint(40, 940)
