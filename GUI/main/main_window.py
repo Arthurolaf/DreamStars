@@ -13,8 +13,8 @@ class Main_Window(QWidget):
         self.initUI()
 	
     def initUI(self):
-
-        model3 = genstars()
+        load_game = None
+        
         
         hbox = QHBoxLayout(self)
 
@@ -26,7 +26,15 @@ class Main_Window(QWidget):
         splitter1 = QSplitter(Qt.Horizontal)
         textedit = QTextEdit()
         splitter1.addWidget(topleft)
-        splitter1.addWidget(model3.model)
+
+        if load_game is not None:            
+            model3 = genstars(load_game=load_game)
+        else:
+            model3 = genstars()
+
+            
+        splitter1.addWidget(model3.model)    
+        
         splitter1.setSizes([100,200])
 
         splitter2 = QSplitter(Qt.Vertical)
