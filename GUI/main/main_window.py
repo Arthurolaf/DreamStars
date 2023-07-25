@@ -3,26 +3,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from Hidenbutton import changeVisibility
+from map import genstars
 
 import random
-
-class MyView(QGraphicsView):
- 
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MidButton: # or Qt.MiddleButton
-            self.__prevMousePos = event.pos()
-        else:
-            super(MyView, self).mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.MidButton: # or Qt.MiddleButton
-            offset = self.__prevMousePos - event.pos()
-            self.__prevMousePos = event.pos()
-
-            self.verticalScrollBar().setValue(self.verticalScrollBar().value() + offset.y())
-            self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + offset.x())
-        else:
-            super(MyView, self).mouseMoveEvent(event)
 
 class Main_Window(QWidget):
     def __init__(self):
@@ -31,26 +14,8 @@ class Main_Window(QWidget):
 	
     def initUI(self):
 
-
-        def populate():
-            # Функция наплевала объектво размного размера на подобии звезд, возвращает как сцену
-            scene = QGraphicsScene()
-
-            for i in range(90):
-                x = random.randint(40, 940)
-                y = random.randint(40, 940)
-                r = random.randint(2, 4)
-                rect = scene.addEllipse(x, y, r, r, QPen(QColor(255,128,0), 0.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin), QBrush(QColor(255,128,20,128)))
-                rect.setFlag( QGraphicsItem.ItemIsSelectable )
-
-            return scene
-
-        scene = populate()
-        scene.setSceneRect(0, 0, 1000, 1000)
-        scene.views
-        model2 = MyView(scene)
-        model2.setStyleSheet("background:black;")
-
+        model3 = genstars()
+        
         hbox = QHBoxLayout(self)
 
         topleft = QFrame()
@@ -61,7 +26,7 @@ class Main_Window(QWidget):
         splitter1 = QSplitter(Qt.Horizontal)
         textedit = QTextEdit()
         splitter1.addWidget(topleft)
-        splitter1.addWidget(model2)
+        splitter1.addWidget(model3.model)
         splitter1.setSizes([100,200])
 
         splitter2 = QSplitter(Qt.Vertical)
