@@ -3,7 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from Hidenbutton import changeVisibility
-from map import genstars
+from map import main_map_scen
 
 import random
 
@@ -28,11 +28,11 @@ class Main_Window(QWidget):
         splitter1.addWidget(topleft)
 
         if load_game is not None:            
-            model3 = genstars(load_game=load_game)
+            model3 = main_map_scen(load_game=load_game)
         else:
-            model3 = genstars()
+            model3 = main_map_scen()
 
-            
+
         splitter1.addWidget(model3.model)    
         
         splitter1.setSizes([100,200])

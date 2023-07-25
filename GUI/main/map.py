@@ -7,6 +7,11 @@ import pandas as pd
 import random
 
 class MyView(QGraphicsView):
+    """
+    change the QGraphicsView class
+    We change only the reaction to pressing, the middle mouse button (wheel)
+    And allows you to move the scene with the middle mouse wheel pressed
+    """
     def mousePressEvent(self, event):
         if event.button() == Qt.MidButton: # or Qt.MiddleButton
             self.__prevMousePos = event.pos()
@@ -23,7 +28,10 @@ class MyView(QGraphicsView):
         else:
             super(MyView, self).mouseMoveEvent(event)
 
-class genstars():
+class main_map_scen():
+    """
+    the main class for generating a scene for loading and saving it in the future and in the documentation we will call it a map
+    """
     def __init__(self, load_game=None):
         self.load = load_game
         self.load_map()
