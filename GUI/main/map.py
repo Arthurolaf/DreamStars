@@ -24,32 +24,45 @@ class MyView(QGraphicsView):
             super(MyView, self).mouseMoveEvent(event)
 
 class genstars():
-    def __init__(self):
+    def __init__(self, load_game=None):
+        self.load = load_game
+        self.load_map()
         self.scene = self.drow_stars()
         self.model = MyView(self.scene)
         self.scene.setSceneRect(0, 0, 1000, 1000)
         self.scene.views
         self.model.setStyleSheet("background:black;")
+        self.df = None
     def gen_star_data(self):
+        
         """
         generates a star map returns a dataframe with the coordinates of all the stars.
 
         The function is written with the expectation that it is used only when creating a new map (I also plan to fix a random_seed to generate identical maps)
         """
-        cordinates = {"x":[],"y":[],"r":2}
+        cordinates = {"x":[],"y":[],"r":3}
         for i in range(90):
             x = random.randint(40, 940)
             y = random.randint(40, 940)
-            r = random.randint(2, 4)
+            #r = random.randint(2, 4)
             cordinates["x"].append(x)
             cordinates["y"].append(y)
-        df = pd.DataFrame.from_dict(cordinates)
-        return df
+        self.df = pd.DataFrame.from_dict(cordinates)
+        
+    def save_map(self):
+        self.df["id"] = "1id"
+        self.df.to_stata("map.stata")    
+    
+    def load_map(self):
+        if self.load != None:
+            self.df = pd.read_stata(self.load)
+        else:
+            self.gen_star_data()
 
     def drow_stars(self):
         # Функция наплевала объектво размного размера на подобии звезд, возвращает как сцену
         scene = QGraphicsScene()
-        for index, row in self.gen_star_data().iterrows():
+        for index, row in self.df.iterrows():
             x, y = row['x'], row['y']
             r = row["r"]
             rect = scene.addEllipse(x, y, r, r, QPen(QColor(255,128,0), 0.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin), QBrush(QColor(255,128,20,128)))
