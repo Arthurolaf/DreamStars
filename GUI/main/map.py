@@ -25,7 +25,7 @@ class MyView(QGraphicsView):
 
 class genstars():
     def __init__(self):
-        self.scene = self.populate()
+        self.scene = self.drow_stars()
         self.model = MyView(self.scene)
         self.scene.setSceneRect(0, 0, 1000, 1000)
         self.scene.views
@@ -46,7 +46,7 @@ class genstars():
         df = pd.DataFrame.from_dict(cordinates)
         return df
 
-    def populate(self):
+    def drow_stars(self):
         # Функция наплевала объектво размного размера на подобии звезд, возвращает как сцену
         scene = QGraphicsScene()
         for index, row in self.gen_star_data().iterrows():
