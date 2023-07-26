@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 map.csv
 map.stata
+GUI/main/tmp_tst.py
