@@ -68,13 +68,11 @@ class main_map_scen():
             self.gen_star_data()
 
     def drow_stars(self):
-        # Функция наплевала объектво размного размера на подобии звезд, возвращает как сцену
         scene = QGraphicsScene()
         for index, row in self.df.iterrows():
             x, y = row['x'], row['y']
             r = row["r"]
             rect = scene.addEllipse(x, y, r, r, QPen(QColor(255,128,0), 0.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin), QBrush(QColor(255,128,20,128)))
-            rect.setFlag( QGraphicsItem.ItemIsSelectable )
-            #print(cordinates)
+            rect.setFlag( QGraphicsItem.ItemIsSelectable )  
         return scene
     
