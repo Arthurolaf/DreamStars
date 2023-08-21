@@ -1,5 +1,5 @@
 "Этот файл должен гене"
-
+import random
 for i in range(90):
     x = random.randint(40, 940)
     y = random.randint(40, 940)

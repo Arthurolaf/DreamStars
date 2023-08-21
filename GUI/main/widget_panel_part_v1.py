@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QVBoxLayout, QLa
 class Mini_Widget(QWidget):
     def __init__(self, name=None):
         QFrame.__init__(self)
-        self.setStyleSheet("""QFrame{
+        self.setStyleSheet("""QFramewidget_panel_part.py{
                                 border: 3px dashed #aaa
                                 } """)
         self.button_pressed = 1

@@ -1,88 +1,47 @@
 import sys
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from Hidenbutton import changeVisibility
 
-import random
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QApplication,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QTabWidget,
+    QWidget,
+)
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtGui import QPalette, QColor
 
-class MyView(QGraphicsView):
-    # Olaf -- Данная функция найдена на просторах интернета, и позволяет сцене прокручиваться средней кнопкой мыши если поле не влазает 
-    # Я рад, теперь осталось набрать объектов в поле.
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MidButton: # or Qt.MiddleButton
-            self.__prevMousePos = event.pos()
-        else:
-            super(MyView, self).mousePressEvent(event)
+class Color(QWidget):
 
-    def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.MidButton: # or Qt.MiddleButton
-            offset = self.__prevMousePos - event.pos()
-            self.__prevMousePos = event.pos()
+    def __init__(self, color):
+        super(Color, self).__init__()
+        self.setAutoFillBackground(True)
 
-            self.verticalScrollBar().setValue(self.verticalScrollBar().value() + offset.y())
-            self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + offset.x())
-        else:
-            super(MyView, self).mouseMoveEvent(event)
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(color))
+        self.setPalette(palette)
 
-class Example(QWidget):
+
+class MainWindow(QMainWindow):
     def __init__(self):
-        super(Example, self).__init__()
-        self.initUI()
-	
-    def initUI(self):
+        super().__init__()
+
+        self.setWindowTitle("My App")
+
+        tabs = QTabWidget()
+        tabs.setTabPosition(QTabWidget.West)
+        tabs.setMovable(True)
+
+        for n, color in enumerate(["red", "green", "blue", "yellow"]):
+            tabs.addTab(Color(color), color)
+
+        self.setCentralWidget(tabs)
 
 
-        def populate():
-            # Функция наплевала объектво размного размера на подобии звезд, возвращает как сцену
-            scene = QGraphicsScene()
-            print("test3")
-            for i in range(90):
-                x = random.randint(40, 940)
-                y = random.randint(40, 940)
-                r = random.randint(2, 4)
-                rect = scene.addEllipse(x, y, r, r, QPen(QColor(255,128,0), 0.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin), QBrush(QColor(255,128,20,128)))
-                rect.setFlag( QGraphicsItem.ItemIsSelectable )
+app = QApplication(sys.argv)
 
-            return scene
+window = MainWindow()
+window.show()
 
-        scene = populate()
-        scene.setSceneRect(0, 0, 1000, 1000)
-        scene.views
-        
-        model2 = MyView(scene)
-        model2.setStyleSheet("background:black;")
-
-        hbox = QHBoxLayout(self)
-
-        topleft = QFrame()
-        topleft.setFrameShape(QFrame.StyledPanel)
-        bottom = QFrame()
-        bottom.setFrameShape(QFrame.StyledPanel)
-
-        splitter1 = QSplitter(Qt.Horizontal)
-        textedit = QTextEdit()
-        splitter1.addWidget(topleft)
-        splitter1.addWidget(model2)
-        splitter1.setSizes([100,200])
-
-        splitter2 = QSplitter(Qt.Vertical)
-        splitter2.addWidget(splitter1)
-        splitter2.addWidget(changeVisibility())
-
-        hbox.addWidget(splitter2)
-
-        self.setLayout(hbox)
-        QApplication.setStyle(QStyleFactory.create('Cleanlooks'))
-
-        self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('QSplitter demo')
-        self.show()
-		
-def main():
-   app = QApplication(sys.argv)
-   ex = Example()
-   sys.exit(app.exec_())
-	
-if __name__ == '__main__':
-   main()
+app.exec()
