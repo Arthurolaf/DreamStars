@@ -1,24 +1,60 @@
 
 #import sys
-from PySide6.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsItem, QGraphicsEllipseItem, QGraphicsRectItem,QApplication
-from PySide6.QtGui import QPen, QColor, QBrush, QFont,QPolygon
-from PySide6.QtCore import Qt, Signal,QPoint
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsItem, QGraphicsEllipseItem ,QGraphicsPixmapItem,QApplication,QGraphicsPolygonItem
+from PySide6.QtGui import QPen, QColor, QBrush, QFont,QPolygon,QPolygonF,QPixmap,QImage
+from PySide6.QtCore import Qt, Signal,QPoint,QPointF
 import pandas as pd
 import random
 import os
-import csv
+from Core.Pursuit_target import pursuit
+from Core.core import GameCore
+from Core.Processing import *
+maincore = GameCore()
+class Planet(QGraphicsEllipseItem):
+    """ Переопределенный Элипс под планету"""
+
+    def __init__(self):
+        super(Planet, self).__init__()
+        self.id = None
+    def setId(self,id):
+        self.id = id
+
+class Planet2(QGraphicsPixmapItem):
+    """ Переопределенный Элипс под планету"""
+
+    def __init__(self):
+        super(Planet2, self).__init__()
+        self.id = None
+    def setId(self,id):
+        self.id = id
+
+class Fleet(QGraphicsPolygonItem):
+    """
+    QGraphicsPolygonItem
+
+    """
+    def __init__(self):
+        super(Fleet, self).__init__()
+
+        self.id = None
+
+    def setId(self,id):
+        self.id = id
+
 class Cursor(QPolygon):
     def __init__(self):
         self.data = None
+
     def setData(self, key, value):  # real signature unknown; restored from __doc__
         self.data = {"key":key, "value":value}
         """ setData(self, key: int, value: Any) -> None """
 
 
-def random_line() -> str:
 
-    file_size = os.path.getsize("stars_name.csv")
-    with open("stars_name.csv", 'rb') as f:
+def random_line() -> str:
+    path_file = "/Users/artur.abaidulov/Projects/DreamStars/data/stars_name.csv"
+    file_size = os.path.getsize(path_file)
+    with open(path_file, 'rb') as f:
         while True:
             pos = random.randint(0, file_size)
             if not pos:  # the first line is chosen
@@ -54,62 +90,18 @@ class MyView(QGraphicsView):
             singleItem = self.itemAt(event.pos().x(), event.pos().y())
 
             if singleItem != None and singleItem.data(0) != 0:
-                #print(round(singleItem.boundingRect().x()))
 
                 if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:  # This will determine if the shift key is depressed
-                    #self.itemDoubleClicked.emit(singleItem)
-                    #print("yes its done")
-                    # if singleItem != self.selectedItems[0] :
                     self.end_line["x"] = round(singleItem.boundingRect().x())
                     self.end_line["y"] = round(singleItem.boundingRect().y())
                     self.itemAddWay.emit(self.end_line)
-                    # with open("tmp.csv", 'r') as file:
-                    #     csvreader = csv.reader(file)
-                    #     for row in csvreader:
-                    #         print("<start>:", row)
-                        #print("<end>:", self.end_line)
 
 
                 else:
-                    #self.selectedItems = []
-                    #self.selectedItems.append(singleItem)
                     self.start_line["x"] = round(singleItem.boundingRect().x())
-                    # print(round(singleItem.boundingRect().y()))
                     self.start_line["y"] = round(singleItem.boundingRect().y())
-                    # row_list = [[f"{self.start_line}"]]
-                    # with open('tmp.csv', 'w', newline='') as file:
-                    #     writer = csv.writer(file)
-                    #     writer.writerows(row_list)
                     self.itemSelect.emit(self.start_line)
-                    #print("<start>:", self.start_line)
-                    #print("<end>:", self.end_line)
-                     #= self.start_line
-
-                    #
-
-                # elif self.selectedItems == []:
-                #     self.selectedItems.append(singleItem)
-                #     self.start_line["x"] = round(singleItem.boundingRect().x())
-                #     # print(round(singleItem.boundingRect().y()))
-                #     self.start_line["y"] = round(singleItem.boundingRect().y())
-                #     print("<start>:", self.start_line)
-                #     print("<end>:", self.end_line)
-                # Возможно для подойдет только для MAC-Book
-
                     pass
-                #elif singleItem.isSelected == False:
-                    #self.end_line["x"] = round(singleItem.boundingRect().x())
-                    #self.end_line["y"] = round(singleItem.boundingRect().y())
-                    #pass
-                    #singleItem.setSelected(True)
-                    #singleItem.isSelected = True
-                    #self.selectedItems.append(singleItem)
-            # else:
-            #     self.origin = event.pos()
-            #     self.rubberBand.setGeometry(QRect(self.origin, QSize()))
-            #     self.rectChanged.emit(self.rubberBand.geometry())
-            #     self.rubberBand.show()
-            #     self.changeRubberBand = True
             return
 
     def mouseMoveEvent(self, event):
@@ -132,15 +124,17 @@ class main_map_scen():
     the main class for generating a scene for loading and saving it in the future and in the documentation we will call it a map
     """
     def __init__(self, load_game=None):
+        self.fleet_cunter = 0
+        self.planet_cunter = 0
         self.load = load_game
         self.load_map()
         self.cursor = None
-        self.scene = self.drow_stars()
+        self.drow_stars()
         self.model = MyView(self.scene)
         self.scene.setSceneRect(0, 0, 1000, 1000)
         self.scene.views
         self.model.setStyleSheet("background:black;")
-        self.df = None
+        #self.df = None
         self.scaner(x1=200, y1=100, r1=320)
         self.scaner(x1=100, y1=300, r1=120, color=1)
         self.drow_fleet(100,100,waytype=0)
@@ -151,9 +145,45 @@ class main_map_scen():
         self.drow_fleet(200, 300, waytype=5)
         self.drow_fleet(100, 300, waytype=6)
         self.drow_fleet(100, 200, waytype=7)
-    def drow_path(self,x1,x2,y1,y2):
 
-        path_way = self.scene.addLine(x1,y1,x2,y2,QPen(QColor(255, 0, 0)))
+    def time_print(self):
+        """ test function will be die after tests"""
+        bad_man = {"x": 350, "y": 200, "speed": 20}
+        goodman = {"x": 400, "y": 900, "speed": 10}
+        goodman_target = [1, 2]
+
+        for i in range(1, 2):
+            #time.sleep(1)
+
+            warp_t1 = pursuit(goodman["x"], goodman["y"], goodman["speed"], goodman_target[0], goodman_target[1],
+                              goodman_target[0], goodman_target[1], 0)
+            warp_p1 = pursuit(bad_man["x"], bad_man["y"], bad_man["speed"], warp_t1[0], warp_t1[1], warp_t1[2],
+                              warp_t1[3],
+                              goodman["speed"])
+            print(f"-{i} turn------------------------------------------------------------------------------------")
+            #print(warp_t1)
+            #print(warp_p1)
+
+            self.drow_path(warp_t1[0], warp_t1[2], warp_t1[1], warp_t1[3], QColor(255, 0, 0))
+            self.drow_fleet(warp_t1[0], warp_t1[1], waytype=6)
+            self.drow_path(warp_p1[0], warp_p1[2], warp_p1[1], warp_p1[3], QColor(0, 255, 0))
+            self.drow_fleet(warp_p1[0], warp_p1[1], waytype=7)
+            bad_man["x"] = warp_p1[2]
+            bad_man["y"] = warp_p1[3]
+            goodman["x"] = warp_t1[2]
+            goodman["y"] = warp_t1[3]
+            #print(bad_man)
+            #print(goodman)
+            goodman_target = [1, 2]
+            if warp_t1[0] == warp_p1[0] and warp_t1[2] == warp_p1[2]:
+                print("battle")
+            self.scene.update()
+        print("end")
+
+
+    def drow_path(self,x1,x2,y1,y2,color):
+        print(x1,x2,y1,y2)
+        path_way = self.scene.addLine(x1,y1,x2,y2,QPen(color))
         path_way.setZValue(10)
         self.model = MyView(self.scene)
         self.model.setStyleSheet("background:black;")
@@ -232,69 +262,98 @@ class main_map_scen():
                       QPoint(8 + x1, 8 + y1)]
             color = QColor(250,200,50,128)
         if waytype == 7:
-            points =[QPoint(0+x1, 5+y1),
+            points = [QPoint(0+x1, 5+y1),
                 QPoint(5+x1, 0+y1),
                 QPoint(5+x1, 10+y1)]
             color = QColor(200, 50, 50, 128)
 
-        poly = QPolygon(points)
-        ship_on_map = self.scene.addPolygon(poly,
-                                       QPen(QColor(0, 0, 0), 0.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin),
-                                       QBrush(QColor(color)))
-        #poly.setZValue(302)
+        #poly = Fleet()
+        custom = []
+        for n in range(len(points)):
+            point = points[n]
+            custom.append(QPointF(point.x(), point.y()))
+            #poly.insert(n,point)
+        #poly.setId(self.add_id("fleet"))
+        polygon = QPolygonF(custom)
+
+        item = Fleet()
+        item.setPolygon(polygon)
+        item.setPen(QPen(QColor(0, 0, 0), 0))
+        item.setBrush(QBrush(QColor(color)))
+        item.setPos(0, 0)
+        item.setId(self.add_id("fleet"))
+        self.scene.addItem(item)
+
         self.model = MyView(self.scene)
         self.model.setStyleSheet("background:black;")
 
 
     def gen_star_data(self):
-        
-        """
-        generates a star map returns a dataframe with the coordinates of all the stars.
-
-        The function is written with the expectation that it is used only when creating a new map (I also plan to fix a random_seed to generate identical maps)
-        """
-        cordinates = {"x":[],"y":[],"r":6,"name":[]}
-        #random.seed(4)
-        for i in range(9):
-            x = random.randint(40, 940)
-            y = random.randint(40, 940)
-            stline = random_line()
-
-            #r = random.randint(2, 4)
-            cordinates["x"].append(x)
-            cordinates["y"].append(y)
-            cordinates["name"].append(stline)
-        self.df = pd.DataFrame.from_dict(cordinates)
-        print(self.df)
+        self.df = maincore.gen_star_data()
 
     def save_map(self):
+        #print(self.df)
         self.df["id"] = "1id"
-        self.df.to_stata("map.stata")    
-    
+        self.df.to_stata("map.stata")
+        self.df.to_csv("map.csv")
+
     def load_map(self):
         if self.load != None:
-            self.df = pd.read_stata(self.load)
+            #self.df = pd.read_stata(self.load)
+            self.df = pd.read_csv(self.load)
         else:
             self.gen_star_data()
+    def add_id(self,type="fleet"):
 
-    def drow_stars(self):
+        if type == "fleet":
+            self.fleet_cunter += 1
+            id = "F" + str(self.fleet_cunter)
 
-        scene = QGraphicsScene()
+        if type == "planet":
+            self.planet_cunter += 1
+            id = "P" + str(self.planet_cunter)
+        return id
+    def remove_id(self):
+        pass
+    def drow_stars2(self):
+        self.scene.clear()
+        #self.scene = QGraphicsScene()
         for index, row in self.df.iterrows():
-            x, y = row['x'], row['y']
-            r = row["r"]
-            #print(x, y)
-            stars = scene.addEllipse(x, y, r, r, QPen(QColor(255,128,0), 0.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin), QBrush(QColor(255,128,20,128)))
-            stars.setZValue(300)
-            stars.setFlag(QGraphicsItem.ItemIsSelectable)
-            stars.isSelected()
+            x, y, r, pl_id = row['x'], row['y'],row["r"], row["id"]
+
+            #print(x, y, r)
+            elips = Planet()
+            elips.setZValue(300)
+            elips.setRect(x, y, r, r)
+            elips.setId(self.add_id("planet"))
+            elips.setBrush(QColor(255, 128, 20, 128))
+            elips.setPen(QColor(255, 128, 0))
+            elips.setFlag(QGraphicsItem.ItemIsSelectable)
+
+            elips.isSelected()
+            #stars = scene.addItem(elips)
+            new_star = Planet2()
+            image_qt = QImage("Images/empty_planet.png")
+            image_qt.height()
+            new_star.setPixmap(QPixmap.fromImage(image_qt))
+            new_star.setZValue(400)
+            new_star.setPos(x-round(image_qt.width()//2),y-round(image_qt.height()//2))
+            new_star.setId(pl_id)
+            #new_star.set
+            #self.scene.setSceneRect(0, 0, 400, 400)
+            self.scene.addItem(new_star)
+
+            #new_star = QPixmap("../../Images/fleet_planet.png")
+            #new_star.setFlag(QGraphicsItem.ItemIsSelectable)
+            #stars.setZValue(300)
+
             #spec_star = scene.addEllipse(300-r//2, 300-r//2, r, r, QPen(QColor(160,160,160), 0.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin), QBrush(QColor(160,160,160,128)))
             #spec_star.setZValue(299)
             font = QFont()
 
 
             #Planets
-            planet_name = scene.addText(row["name"])
+            planet_name = self.scene.addText(row["name"])
             planet_name.setPos(x-30, y+10)
             planet_name.setZValue(201)
             planet_name.setDefaultTextColor(QColor(250,250,250))
@@ -319,5 +378,10 @@ class main_map_scen():
             #     poly = QPolygon(points)
             #     painter.drawPolygon(poly)
 
-        return scene
+        #return scene
+    def drow_stars(self):
 
+        self.scene = QGraphicsScene()
+
+
+        #return scene

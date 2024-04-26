@@ -11,10 +11,10 @@ from PySide6.QtCore import QByteArray, QDataStream, QIODevice, Qt
 from PySide6.QtNetwork import QTcpServer,QHostAddress
 from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout,
                                QLabel, QMessageBox, QPushButton,
-                               QVBoxLayout)
+                               QVBoxLayout,QWidget)
 
 
-class Server(QDialog):
+class Server(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.port = 2000
@@ -103,8 +103,14 @@ class Server(QDialog):
         self.client_connection.disconnectFromHost()
 
 
-if __name__ == '__main__':
+
+def main():
     app = QApplication(sys.argv)
-    server = Server()
     random.seed(None)
-    sys.exit(server.exec())
+    server = Server()
+
+    server.show()
+    sys.exit(app.exec())
+
+if __name__ == '__main__':
+   main()

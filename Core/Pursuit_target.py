@@ -31,7 +31,7 @@ def warp_long(x1:float,y1:float,tx1:float,ty1:float,speed=0.,debug=False):
     print debug info if set True
     """
 
-    #
+
 
     if debug is True:
         print(" =b-------- def warp_long debug --------=")
@@ -52,6 +52,8 @@ def warp_long(x1:float,y1:float,tx1:float,ty1:float,speed=0.,debug=False):
             print(f"accurate: {accurate}")
     elif speed == 0:
         accurate = 1
+
+
     # Laying out the vector on the axis
     vector_x = tx1-x1
     vector_y = ty1-y1
@@ -142,49 +144,4 @@ def pursuit(px1:float, py1:float, s1:int, tx1:float,ty1:float, tx2:float, ty2:fl
     return (corrected_pursuer_warp)
 
 
-#warp_long(1,1,22,8,4)
-bad_man = {"x":18,"y":10,"speed":1.5}
-goodman = {"x":18,"y":2,"speed":1}
-goodman_target = [1,2]
 
-
-# for i in range(1,20):
-#     warp_t1 = pursuit(goodman["x"], goodman["y"], goodman["speed"], goodman_target[0], goodman_target[1],
-#                       goodman_target[0], goodman_target[1], 0)
-#     warp_p1 = pursuit(bad_man["x"], bad_man["y"], bad_man["speed"], warp_t1[0], warp_t1[1], warp_t1[2], warp_t1[3],
-#                       goodman["speed"],)
-#     print(f"-{i} turn------------------------------------------------------------------------------------")
-#     print(warp_t1)
-#     print(warp_p1)
-#     print("speed:", vector_long(warp_p1[0],warp_p1[1],warp_p1[2],warp_p1[3]))
-#     #warp_long(1, 1, 22, 8, 4)
-#     bad_man["x"] = warp_p1[2]
-#     bad_man["y"] = warp_p1[3]
-#     goodman["x"] = warp_t1[2]
-#     goodman["y"] = warp_t1[3]
-#     print(bad_man)
-#     print(goodman)
-#     goodman_target = [1, 2]
-#     if warp_t1[0] == warp_p1[0] and warp_t1[2] == warp_p1[2]:
-#         print("battle")
-#
-# print("end")
-
-# warp_t1 = pursuit(goodman["x"],goodman["y"],goodman["speed"],goodman_target[0],goodman_target[1],goodman_target[0],goodman_target[1],0)
-# warp_p1 = pursuit(bad_man["x"],bad_man["y"],bad_man["speed"],warp_t1[0],warp_t1[1],warp_t1[2],warp_t1[3],goodman["speed"])
-# print(warp_t1)
-# print(warp_p1)
-#
-#
-# print("-1 turn------------------------------------------------------------------------------------")
-# warp_t2 = pursuit(warp_t1[2],warp_t1[3],goodman["speed"],goodman_target[0],goodman_target[1],goodman_target[0],goodman_target[1],0)
-# warp_p2 = pursuit(warp_p1[2],warp_p1[3],bad_man["speed"],warp_t2[0],warp_t2[1],warp_t2[2],warp_t2[3],goodman["speed"])
-#
-# print(warp_t2)
-# print(warp_p2)
-# print("-2 turn------------------------------------------------------------------------------------")
-# warp_t3 = pursuit(warp_t2[2],warp_t2[3],goodman["speed"],goodman_target[0],goodman_target[1],goodman_target[0],goodman_target[1],0)
-# warp_p3 = pursuit(warp_p2[2],warp_p2[3],bad_man["speed"],warp_t3[0],warp_t3[1],warp_t3[2],warp_t3[3],goodman["speed"])
-#
-# print(warp_t3)
-# print(warp_p3)

@@ -34,13 +34,13 @@ class MainWindow(QMainWindow):
             self.message("Executing process Server")
             self.server = QProcess()  # Keep a reference to the QProcess (e.g. on self) while it's running.
             self.server.finished.connect(self.server_process_finished)  # Clean up once complete.
-            self.server.start("python3", ['server.py'])
+            self.server.start("python3", ['client_server/nu_server.py'])
 
         if self.client is None:  # No process running.
-            self.message("Executing process")
+            self.message("Executing process Client")
             self.client = QProcess()  # Keep a reference to the QProcess (e.g. on self) while it's running.
             self.client.finished.connect(self.client_process_finished)  # Clean up once complete.
-            self.client.start("python3", ['client.py'])
+            self.client.start("python3", ['strange/client_server/nu_client.py'])
 
     def server_process_finished(self):
         self.message("Server process finished.")

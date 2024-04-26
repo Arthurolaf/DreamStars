@@ -1,7 +1,11 @@
 from PySide6.QtNetwork import QAbstractSocket, QTcpSocket
 from PySide6.QtCore import QObject,QDataStream,QTimer,QByteArray,QIODevice
 from PySide6.QtWidgets import QPushButton,QApplication,QMessageBox,QDialog,QWidget,QVBoxLayout
-class Client(QWidget):
+import sys
+
+
+#Удачный тип клиента который я и хотел (Остальное можно заархивировать в одну хламную папку)
+class Client(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._server_port = 2000
@@ -13,14 +17,29 @@ class Client(QWidget):
         self._status_label ="This examples requires that you run the Fortune Server example as well."
 
         self._tcp_socket = QTcpSocket(self)
-        self._layout = QVBoxLayout(self)
-        self._get_fortune_button = QPushButton("Get Fortune")
-        self._layout.addWidget(self._get_fortune_button)
-        self._get_fortune_button.clicked.connect(self.request_new_fortune)
+        _layout = QVBoxLayout(self)
+        _get_fortune_button = QPushButton("Get Fortune")
+        _layout.addWidget(_get_fortune_button)
+        _get_fortune_button.clicked.connect(self.request_new_fortune)
 
-        self._tcp_socket.readyRead.connect(self.read_fortune)
+        #self._tcp_socket.readyRead.connect(self.read_fortune)
+
         self._tcp_socket.errorOccurred.connect(self.display_error)
 
+        # button_layout = QHBoxLayout()
+        # button_layout.addStretch(1)
+        # button_layout.addWidget(quit_button)
+        # button_layout.addStretch(1)
+        #
+        # main_layout = QVBoxLayout(self)
+        # main_layout.addWidget(status_label)
+        # main_layout.addLayout(button_layout)
+
+        self.setWindowTitle("Fortune Client")
+
+    def getChangedValue(self):
+        self._tcp_socket.readyRead.connect(self.read_fortune)
+        return self._message
     def send_msg(self):
         block = QByteArray()
         out = QDataStream(block, QIODevice.WriteOnly)
@@ -53,6 +72,7 @@ class Client(QWidget):
         self._block_size = instr.readUInt16()
         self._message = instr.readString()
         print(self._message)
+        return self._message
         print(self._block_size)
         if self._block_size == 0:
             if self._tcp_socket.bytesAvailable() < 2:
@@ -67,7 +87,7 @@ class Client(QWidget):
 
         if self._tcp_socket.bytesAvailable() < self._block_size:
             return
-
+        #return self._message
 
 
 
@@ -88,12 +108,12 @@ class Client(QWidget):
             QMessageBox.information(self, "Fortune Client",
                     f"The following error occurred: {reason}.")
 
-if __name__ == '__main__':
-    import sys
+def main():
     app = QApplication(sys.argv)
-    client = Client()
-
-    client.show()
-
+    clnt = Client()
+    clnt.exec()
+    #clnt.show()
     sys.exit(app.exec())
 
+if __name__ == '__main__':
+   main()
