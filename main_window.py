@@ -58,6 +58,10 @@ class Main_Window(QWidget):
         #self.setLayout(main_layout_box)
         # temporary placeholder
         bottom_left = QFrame()
+        test_btn = QPushButton("Test")
+        test_lut = QHBoxLayout(bottom_left)
+        test_lut.addWidget(test_btn)
+        test_btn.clicked.connect(self.map_move)
         bottom_left.setFrameShape(QFrame.StyledPanel)
         top_left = Top_left_window()
         top_left2 = QFrame()
@@ -107,10 +111,24 @@ class Main_Window(QWidget):
         self.map.model.itemDoubleClicked.connect(self.handleItemDoubleClicked)
         self.map.model.itemSelect.connect(self.item_selected)
         self.map.model.itemAddWay.connect(self.drow_path)
+
         #self.map.model.itemDoubleClicked.connect(lambda item: self.printer(item))
+
+    def map_move(self):
+        self.map.time_print()
+    def map_info(self):
+
+            for i in self.map.model.scene().items():
+                try:
+                    print([i.id,i.data(0),round(i.boundingRect().x()),round(i.boundingRect().y())])
+                except AttributeError:
+                    #print("no id found")
+                    print([i.data(0), round(i.boundingRect().x()), round(i.boundingRect().y())])
+
     def handleItemDoubleClicked(self, item):
             print(round(item.boundingRect().x()))
             print(round(item.boundingRect().y()))
+            print(item.id)
             print(type(item))
 
     def item_selected(self, item):
